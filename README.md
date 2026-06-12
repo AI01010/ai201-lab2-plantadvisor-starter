@@ -2,7 +2,7 @@
 
 A conversational agent that helps users care for their houseplants. Ask it anything about a plant in its database and it will look up the care requirements, check the current seasonal context, and give you specific, grounded advice.
 
-The app is built and running. The agent isn't functional yet — that's the lab.
+The app is built and running. It can take your messages and generate responses through an agent loop logic and RAG from the plant database.
 
 ---
 

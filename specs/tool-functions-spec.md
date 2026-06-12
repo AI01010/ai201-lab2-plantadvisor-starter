@@ -1,13 +1,13 @@
 # Spec: Tool Functions
 
 **File:** `tools.py`
-**Status:** `get_seasonal_conditions` — Pre-implemented, read through. `lookup_plant` — complete spec fields before implementing.
+**Status:** `get_seasonal_conditions` — Pre-implemented, read through. `lookup_plant` — implemented (Milestone 1). `get_plant_list` — added for the optional challenge.
 
 ---
 
 ## Purpose
 
-These two functions are the tools the agent can call. They retrieve structured data from the local plant database and seasonal data files and return it to the agent loop, which passes it to the LLM as context for generating a response.
+These three functions are the tools the agent can call. They retrieve structured data from the local plant database and seasonal data files and return it to the agent loop, which passes it to the LLM as context for generating a response.
 
 ---
 
@@ -219,4 +219,50 @@ Returned season: Summer (with "detected_season": True)
 **Test: does calling with `season="winter"` return winter data regardless of the current month?**
 ```
 yes — returns the Winter dict with "detected_season": False even though it's June
+```
+
+---
+
+## Function 3: `get_plant_list()` *(optional challenge)*
+
+### Input / Output Contract
+
+**Inputs:** none
+
+**Output:** `dict`
+
+```python
+{"count": <number of plants>, "plants": [{"name": <display_name>, "difficulty": <level>}, ...]}
+```
+
+Plants are sorted alphabetically by display name.
+
+---
+
+### Design Decisions
+
+**Why this tool exists:** `lookup_plant` only searches by a specific name, so
+the agent had no way to answer catalog-style questions ("what plants do you
+know about?", "what's a good beginner plant?"). This tool returns the full
+inventory with difficulty levels so the LLM can browse and recommend.
+
+**Why only name + difficulty:** returning every plant's full care dict would
+flood the context with 15 plants × full care data on every catalog question.
+Name + difficulty is enough for listing and recommending; the LLM can follow
+up with `lookup_plant` for the chosen plant's details.
+
+---
+
+#### Implementation Notes
+
+**Test: "what plants do you know about?"**
+```
+yes — one get_plant_list() call; the agent summarized the 15-plant catalog
+and offered to go deeper on any of them.
+```
+
+**Test: "what's a good beginner plant?"**
+```
+yes — one get_plant_list() call; the agent filtered to difficulty "easy" and
+recommended Pothos or Snake Plant, offering details on either.
 ```
